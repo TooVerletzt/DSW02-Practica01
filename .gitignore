@@ -1,0 +1,25 @@
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
+build/
+
+# Environment
+.env*
+
+# IDE / Editor
+.vscode/
+.idea/
+*.iml
+
+# OS / temp
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Logs
+*.log

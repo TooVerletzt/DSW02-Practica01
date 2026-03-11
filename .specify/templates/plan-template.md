@@ -31,7 +31,14 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Stack gate: Uses Spring Boot 3 and Java 17.
+- API versioning gate: Exposes business REST endpoints only under `/api/v1` (except `/swagger-ui/**`, `/v3/api-docs/**`, `/actuator/**`).
+- Security gate: Enforces HTTP Basic Authentication with fixed local test admin credential `admin/admin123`.
+- Authorization gate: Requires role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`).
+- Data gate: Uses PostgreSQL as the persistent store.
+- Runtime gate: Supports Docker-based local execution for app + PostgreSQL.
+- Documentation gate: Includes Swagger/OpenAPI with `basicAuth` Authorize support.
+- Pagination gate: Employee list endpoints support `page`, `size`, `sort` and return paginated metadata.
 
 ## Project Structure
 

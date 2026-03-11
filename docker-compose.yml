@@ -1,0 +1,42 @@
+services:
+  empleados-postgres:
+    image: postgres:16
+    container_name: empleados-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: empleadosdb
+      POSTGRES_USER: empleados_user
+      POSTGRES_PASSWORD: empleados_pass
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d empleadosdb -U empleados_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  empleados-backend:
+    build: ./backend
+    container_name: empleados-backend
+    restart: unless-stopped
+    depends_on:
+      empleados-postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://empleados-postgres:5432/empleadosdb
+      SPRING_DATASOURCE_USERNAME: empleados_user
+      SPRING_DATASOURCE_PASSWORD: empleados_pass
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+
+volumes:
+  postgres_data:

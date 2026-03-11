@@ -1,0 +1,32 @@
+# DSW02-PRACTICA01 Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-03-05
+
+## Active Technologies
+- Java 17 + Spring Boot 3 (Web, Data JPA, Security, Validation, Actuator), Spring Data Pageable, springdoc-openapi (001-crud-empleados-api-v1)
+
+- Java 17 + Spring Boot 3 (Web, Data JPA, Security, Validation), PostgreSQL Driver, springdoc-openapi (002-crud-empleados)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+# Add commands for Java 17
+
+## Code Style
+
+Java 17: Follow standard conventions
+
+## Recent Changes
+- 001-crud-empleados-api-v1: Added Java 17 + Spring Boot 3 (Web, Data JPA, Security, Validation, Actuator), Spring Data Pageable, springdoc-openapi
+
+- 002-crud-empleados: Added Java 17 + Spring Boot 3 (Web, Data JPA, Security, Validation), PostgreSQL Driver, springdoc-openapi
+
+<!-- MANUAL ADDITIONS START -->
+- Business REST endpoints must use `/api/v1` prefix.
+<!-- MANUAL ADDITIONS END -->

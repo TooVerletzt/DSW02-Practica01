@@ -1,0 +1,25 @@
+# Git
+.git/
+.gitignore
+
+# Build outputs
+target/
+build/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# Logs and env
+*.log*
+.env*
+
+# Docker files
+Dockerfile*
+.dockerignore
+
+# Node artifacts (if present)
+node_modules/
+
+# Test / coverage
+coverage/
