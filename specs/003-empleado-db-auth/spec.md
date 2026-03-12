@@ -83,6 +83,7 @@ Como desarrollador de la práctica, quiero levantar el sistema en Docker y dispo
 - ¿Qué ocurre si la tabla ya contiene empleados al iniciar? No se deben duplicar usuarios seed.
 - ¿Qué ocurre si un empleado existe sin rol válido? Debe rechazarse su uso para autorización hasta corregir el dato.
 - ¿Qué ocurre si se consume `/api/v1/empleados` sin parámetros de paginación? Debe mantener la paginación por defecto ya vigente.
+- ¿Qué ocurre si existen datos legacy incompatibles con el nuevo esquema de autenticación? Para esta práctica se requiere reiniciar a BD limpia antes de ejecutar.
 
 ## Requirements *(mandatory)*
 
@@ -107,6 +108,7 @@ Como desarrollador de la práctica, quiero levantar el sistema en Docker y dispo
 - **FR-017**: System MUST expose and maintain API documentation via Swagger/OpenAPI with `basicAuth` Authorize support.
 - **FR-018**: Employee list endpoint `GET /api/v1/empleados` MUST preserve paginated behavior with `page`, `size`, `sort` and paginated metadata in response.
 - **FR-019**: Authentication MVP for this feature MUST be Basic Auth; introducing `/api/v1/auth/login` is out of scope for this iteration.
+- **FR-020**: Practice precondition MUST be a clean PostgreSQL dataset; automatic legacy backfill is out of scope. If incompatible legacy data exists, operators MUST run `docker compose down -v` before execution.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -120,6 +122,7 @@ Como desarrollador de la práctica, quiero levantar el sistema en Docker y dispo
 - Los usuarios seed forman parte del entorno de práctica/desarrollo y no sustituyen la gestión normal de usuarios en escenarios productivos.
 - Los endpoints funcionales existentes del CRUD de empleados y su contrato de paginación permanecen vigentes.
 - Si alguna decisión entra en conflicto con el estado actual del código, se priorizarán cambios mínimos e incrementales sin rehacer arquitectura o módulos.
+- Precondición operativa de la práctica: trabajar con BD limpia; no se implementa backfill automático de datos legacy. Si hay datos incompatibles, ejecutar `docker compose down -v` antes de levantar el entorno.
 
 ## Success Criteria *(mandatory)*
 

@@ -7,6 +7,7 @@ import com.dsw02.empleados.model.EmpleadoUpdateRequest;
 import com.dsw02.empleados.repository.EmpleadoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +16,14 @@ public class EmpleadoService {
 
     private final EmpleadoRepository empleadoRepository;
     private final EmpleadoValidationService validationService;
+    private final PasswordEncoder passwordEncoder;
 
     public EmpleadoService(EmpleadoRepository empleadoRepository,
-                           EmpleadoValidationService validationService) {
+                           EmpleadoValidationService validationService,
+                           PasswordEncoder passwordEncoder) {
         this.empleadoRepository = empleadoRepository;
         this.validationService = validationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -31,6 +35,9 @@ public class EmpleadoService {
         empleado.setNombre(validationService.normalizeText(request.getNombre(), "nombre"));
         empleado.setDireccion(validationService.normalizeText(request.getDireccion(), "dirección"));
         empleado.setTelefono(validationService.normalizeText(request.getTelefono(), "teléfono"));
+        empleado.setEmail(normalizeAndValidateUniqueEmail(request.getEmail(), null));
+        empleado.setPasswordHash(passwordEncoder.encode(validationService.normalizeText(request.getPassword(), "password")));
+        empleado.setRole(request.getRole());
 
         Empleado saved = empleadoRepository.save(empleado);
         return mapToResponse(saved);
@@ -60,6 +67,9 @@ public class EmpleadoService {
         empleado.setNombre(validationService.normalizeText(request.getNombre(), "nombre"));
         empleado.setDireccion(validationService.normalizeText(request.getDireccion(), "dirección"));
         empleado.setTelefono(validationService.normalizeText(request.getTelefono(), "teléfono"));
+        empleado.setEmail(normalizeAndValidateUniqueEmail(request.getEmail(), empleado.getClave()));
+        empleado.setPasswordHash(passwordEncoder.encode(validationService.normalizeText(request.getPassword(), "password")));
+        empleado.setRole(request.getRole());
 
         Empleado saved = empleadoRepository.save(empleado);
         return mapToResponse(saved);
@@ -84,6 +94,18 @@ public class EmpleadoService {
         response.setNombre(empleado.getNombre());
         response.setDireccion(empleado.getDireccion());
         response.setTelefono(empleado.getTelefono());
+        response.setEmail(empleado.getEmail());
+        response.setRole(empleado.getRole());
         return response;
+    }
+
+    private String normalizeAndValidateUniqueEmail(String email, String currentClave) {
+        String normalizedEmail = validationService.normalizeEmail(email);
+        empleadoRepository.findByEmail(normalizedEmail).ifPresent(existing -> {
+            if (currentClave == null || !existing.getClave().equals(currentClave)) {
+                throw new BadRequestException("El email ya está registrado");
+            }
+        });
+        return normalizedEmail;
     }
 }

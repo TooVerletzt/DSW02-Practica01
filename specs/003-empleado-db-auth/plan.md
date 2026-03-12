@@ -18,6 +18,10 @@ Se preservan sin regresión:
 - `/actuator/health` público (`permitAll`)
 - Swagger/OpenAPI accesible con `basicAuth` (`Authorize`)
 
+Precondición de implementación para esta práctica:
+- BD limpia; no se implementa backfill automático de datos legacy.
+- Si existen datos incompatibles, ejecutar `docker compose down -v` antes de levantar el entorno.
+
 ## Technical Context
 
 **Language/Version**: Java 17  
@@ -105,7 +109,7 @@ quirúrgicos en entidad/repositorio/seguridad/seed sin crear nuevos módulos.
 1. **Migración BD (Flyway)**
   - agregar columnas `email`, `password_hash`, `role` a `empleados`
   - crear índice único para `email`
-  - aplicar estrategia de backfill segura para filas existentes
+  - sin backfill automático; asumir BD limpia en esta práctica
 2. **Repositorio y modelo**
   - extender `Empleado` y `EmpleadoRepository` para búsqueda por `email`
 3. **Seguridad**
@@ -122,23 +126,19 @@ quirúrgicos en entidad/repositorio/seguridad/seed sin crear nuevos módulos.
 
 ## Risks & Mitigation
 
-1. **Datos existentes sin nuevos campos requeridos**
-  - Riesgo: migración puede fallar por `NOT NULL` en filas históricas.
-  - Mitigación: migración en fases (`ADD COLUMN` nullable + backfill + constraints) y fallback controlado.
+1. **Datos legacy incompatibles en entorno local**
+  - Riesgo: migración puede fallar si el volumen contiene datos previos que no cumplen el nuevo esquema.
+  - Mitigación: declarar precondición de BD limpia y ejecutar `docker compose down -v` antes de `docker compose up -d --build`.
 
-2. **Conflicto por unicidad de email en datos legacy**
-  - Riesgo: filas previas podrían recibir emails duplicados en backfill.
-  - Mitigación: definir patrón determinista por `clave` para backfill inicial y auditar colisiones antes de `UNIQUE`.
-
-3. **Regresión de contratos CRUD/paginación**
+2. **Regresión de contratos CRUD/paginación**
   - Riesgo: cambios en DTO pueden romper clientes existentes.
   - Mitigación: mantener rutas y semántica de paginación; documentar cambios de payload en contrato y quickstart.
 
-4. **Regresión operativa en Docker healthchecks**
+3. **Regresión operativa en Docker healthchecks**
   - Riesgo: endurecimiento de seguridad bloquee `/actuator/health`.
   - Mitigación: mantener matcher explícito `permitAll` y validar healthcheck tras despliegue local.
 
-5. **Acoplamiento excesivo por cambios grandes en seguridad**
+4. **Acoplamiento excesivo por cambios grandes en seguridad**
   - Riesgo: cambios simultáneos en múltiples capas compliquen rollback.
   - Mitigación: implementación incremental por orden definido y commits lógicos por fase.
 

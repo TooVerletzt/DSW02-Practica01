@@ -4,6 +4,15 @@
 - Docker + Docker Compose
 - `curl`
 
+## Precondición de datos
+
+- Esta práctica asume **BD limpia**; no se implementa backfill automático de datos legacy.
+- Si existen datos incompatibles en el volumen de PostgreSQL, ejecutar antes de levantar:
+
+```bash
+docker compose down -v
+```
+
 ## 1) Levantar entorno
 
 ```bash
@@ -46,6 +55,27 @@ Esperado:
 - HTTP `200`
 - Respuesta paginada con `content`, `totalElements`, `totalPages`, `number`, `size`.
 
+## 4.1) Validar que no hay duplicados por email (seed idempotente)
+
+Antes de reinicios:
+
+```bash
+docker exec -it empleados-postgres psql -U empleados_user -d empleadosdb -c "SELECT email, COUNT(*) FROM empleados GROUP BY email HAVING COUNT(*) > 1;"
+```
+
+Reiniciar backend dos veces:
+
+```bash
+docker compose restart empleados-backend
+docker compose restart empleados-backend
+```
+
+Repetir query y confirmar 0 filas:
+
+```bash
+docker exec -it empleados-postgres psql -U empleados_user -d empleadosdb -c "SELECT email, COUNT(*) FROM empleados GROUP BY email HAVING COUNT(*) > 1;"
+```
+
 ## 5) Validar `401` por credenciales inválidas
 
 ```bash
@@ -76,6 +106,8 @@ curl -i -u admin@demo.com:admin123 -X POST http://localhost:8080/api/v1/empleado
   -d '{"nombre":"Test Admin","direccion":"Dir","telefono":"555-1111","email":"nuevo-admin@demo.com","password":"adminpass123","role":"ADMIN"}'
 ```
 
+Guardar la `clave` devuelta por el `POST` (campo `clave`) para usarla en `PUT/DELETE/GET`.
+
 Actualizar (reemplazar `EMP-<n>` por clave real):
 
 ```bash
@@ -94,6 +126,15 @@ Esperado:
 - `POST` -> `201`
 - `PUT` -> `200`
 - `DELETE` -> `204`
+
+Verificar `404` posterior al borrado (reemplazar `EMP-<n>` por la misma clave eliminada):
+
+```bash
+curl -i -u admin@demo.com:admin123 http://localhost:8080/api/v1/empleados/EMP-1
+```
+
+Esperado:
+- `GET` posterior -> `404`
 
 ## 8) Apagar entorno
 

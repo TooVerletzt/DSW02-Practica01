@@ -6,6 +6,8 @@ public class EmpleadoResponse {
     private String nombre;
     private String direccion;
     private String telefono;
+    private String email;
+    private EmpleadoRole role;
 
     public String getClave() {
         return clave;
@@ -37,5 +39,21 @@ public class EmpleadoResponse {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public EmpleadoRole getRole() {
+        return role;
+    }
+
+    public void setRole(EmpleadoRole role) {
+        this.role = role;
     }
 }

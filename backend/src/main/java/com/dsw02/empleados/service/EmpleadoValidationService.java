@@ -4,6 +4,7 @@ import com.dsw02.empleados.model.EmpleadoCreateRequest;
 import com.dsw02.empleados.model.EmpleadoUpdateRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 @Service
@@ -49,6 +50,14 @@ public class EmpleadoValidationService {
         }
 
         return normalized;
+    }
+
+    public String normalizeEmail(String email) {
+        String normalizedEmail = normalizeText(email, "email").toLowerCase(Locale.ROOT);
+        if (normalizedEmail.length() > MAX_FIELD_LENGTH) {
+            throw new BadRequestException("El campo email excede 100 caracteres");
+        }
+        return normalizedEmail;
     }
 
     private void validateTextLength(String value, String fieldName) {
