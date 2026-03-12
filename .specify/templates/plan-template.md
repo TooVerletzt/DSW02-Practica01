@@ -33,10 +33,11 @@
 
 - Stack gate: Uses Spring Boot 3 and Java 17.
 - API versioning gate: Exposes business REST endpoints only under `/api/v1` (except `/swagger-ui/**`, `/v3/api-docs/**`, `/actuator/**`).
-- Security gate: Enforces HTTP Basic Authentication with fixed local test admin credential `admin/admin123`.
-- Authorization gate: Requires role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`).
+- Security gate: Enforces HTTP Basic Authentication backed by persisted `Empleado` credentials (`email` + BCrypt `password`).
+- Identity source gate: Prohibits in-memory/hardcoded final credentials for feature delivery.
+- Authorization gate: Requires role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`) and allows read operations to `ADMIN` and `USER`.
 - Data gate: Uses PostgreSQL as the persistent store.
-- Runtime gate: Supports Docker-based local execution for app + PostgreSQL.
+- Runtime gate: Supports Docker-based local execution with two containers (`backend` + `postgres`) and keeps `/actuator/health` public (`permitAll`) for healthchecks.
 - Documentation gate: Includes Swagger/OpenAPI with `basicAuth` Authorize support.
 - Pagination gate: Employee list endpoints support `page`, `size`, `sort` and return paginated metadata.
 

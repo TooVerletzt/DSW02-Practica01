@@ -87,17 +87,19 @@
 - **FR-001**: System MUST be implemented as a Spring Boot 3 backend using Java 17.
 - **FR-002**: System MUST expose business REST endpoints under `/api/v1` only (except `/swagger-ui/**`, `/v3/api-docs/**`, `/actuator/**`).
 - **FR-003**: System MUST protect non-public endpoints with HTTP Basic Authentication.
-- **FR-004**: System MUST use fixed local test admin credential `admin/admin123`.
-- **FR-005**: System MUST require role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`).
-- **FR-006**: System MUST persist application data in PostgreSQL.
-- **FR-007**: System MUST provide Docker-based local execution for required services.
-- **FR-008**: System MUST expose and maintain API documentation via Swagger/OpenAPI with `basicAuth` Authorize support.
-- **FR-009**: Employee list endpoint MUST support `page`, `size`, `sort` and return paginated response metadata.
+- **FR-004**: System MUST authenticate users against persisted `Empleado` data using unique `email` and BCrypt-hashed `password`.
+- **FR-005**: System MUST NOT use in-memory or hardcoded users as the final authentication source.
+- **FR-006**: System MUST require role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`) and allow read operations (`GET`) to roles `ADMIN` and `USER`.
+- **FR-007**: System MUST persist application data in PostgreSQL.
+- **FR-008**: System MUST provide Docker-based local execution with two containers (`backend` + `postgres`).
+- **FR-009**: System MUST keep `/actuator/health` public (`permitAll`) for container healthchecks.
+- **FR-010**: System MUST expose and maintain API documentation via Swagger/OpenAPI with `basicAuth` Authorize support.
+- **FR-011**: Employee list endpoint MUST support `page`, `size`, `sort` and return paginated response metadata.
 
 *Example of marking unclear requirements:*
 
-- **FR-010**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
-- **FR-011**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-012**: System MUST authenticate users via [NEEDS CLARIFICATION: Basic Auth only for MVP, or Basic Auth + dedicated `/api/v1/auth/login` endpoint?]
+- **FR-013**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
 ### Key Entities *(include if feature involves data)*
 

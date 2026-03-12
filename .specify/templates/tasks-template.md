@@ -64,11 +64,11 @@ Examples of foundational tasks (adjust based on your project):
 
 - [ ] T004 Setup PostgreSQL schema and migrations framework
 - [ ] T005 [P] Configure Docker runtime (app + PostgreSQL) for local development
-- [ ] T006 [P] Implement Spring Security HTTP Basic Authentication baseline with local test admin credential `admin/admin123`
+- [ ] T006 [P] Implement Spring Security HTTP Basic Authentication backed by `Empleado` (`email` + BCrypt `password`)
 - [ ] T007 [P] Setup API routing with required `/api/v1` prefix for business endpoints
 - [ ] T008 Create base models/entities and paginated list response contracts (content + metadata)
 - [ ] T009 Configure Swagger/OpenAPI documentation exposure with `basicAuth` Authorize support
-- [ ] T010 Enforce role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`)
+- [ ] T010 Enforce role policy (`ADMIN` for `POST/PUT/DELETE`, `ADMIN`/`USER` for `GET`) and keep `/actuator/health` as `permitAll`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

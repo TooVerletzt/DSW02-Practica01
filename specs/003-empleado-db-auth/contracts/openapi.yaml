@@ -1,0 +1,265 @@
+openapi: 3.0.3
+info:
+  title: Empleados API v1
+  version: 1.1.0
+  description: >-
+    CRUD de empleados con autenticación Basic contra tabla empleados
+    (email + BCrypt), autorización por rol y paginación.
+servers:
+  - url: http://localhost:8080
+security:
+  - basicAuth: []
+paths:
+  /api/v1/empleados:
+    get:
+      summary: Listar empleados (paginado)
+      description: Requiere Basic Auth. Permite roles ADMIN y USER.
+      operationId: listarEmpleadosPaginado
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: sort
+          description: Formato `clave,asc` o `clave,desc`
+          schema:
+            type: string
+            default: clave,asc
+      responses:
+        '200':
+          description: Página de empleados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoPage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      summary: Crear empleado
+      description: Requiere Basic Auth con rol ADMIN.
+      operationId: crearEmpleado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoCreateRequest'
+      responses:
+        '201':
+          description: Empleado creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empleado'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /api/v1/empleados/{clave}:
+    parameters:
+      - in: path
+        name: clave
+        required: true
+        schema:
+          type: string
+          pattern: '^EMP-[1-9][0-9]*$'
+    get:
+      summary: Obtener empleado por clave
+      description: Requiere Basic Auth. Permite roles ADMIN y USER.
+      operationId: obtenerEmpleado
+      responses:
+        '200':
+          description: Empleado encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empleado'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Empleado no encontrado
+    put:
+      summary: Actualizar empleado
+      description: Requiere Basic Auth con rol ADMIN.
+      operationId: actualizarEmpleado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoUpdateRequest'
+      responses:
+        '200':
+          description: Empleado actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empleado'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Empleado no encontrado
+    delete:
+      summary: Eliminar empleado
+      description: Requiere Basic Auth con rol ADMIN.
+      operationId: eliminarEmpleado
+      responses:
+        '204':
+          description: Empleado eliminado
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Empleado no encontrado
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: No autenticado o credenciales inválidas
+    Forbidden:
+      description: Sin permisos para la operación
+  schemas:
+    Empleado:
+      type: object
+      required: [clave, nombre, direccion, telefono, email, role]
+      properties:
+        clave:
+          type: string
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        role:
+          type: string
+          enum: [ADMIN, USER]
+
+    EmpleadoCreateRequest:
+      type: object
+      required: [nombre, direccion, telefono, email, password, role]
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+        role:
+          type: string
+          enum: [ADMIN, USER]
+
+    EmpleadoUpdateRequest:
+      type: object
+      required: [nombre, direccion, telefono, email, role]
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        direccion:
+          type: string
+          maxLength: 100
+        telefono:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 100
+        password:
+          type: string
+          minLength: 6
+          maxLength: 100
+          description: Opcional. Si se envía, se reemplaza el passwordHash.
+        role:
+          type: string
+          enum: [ADMIN, USER]
+
+    EmpleadoPage:
+      type: object
+      required: [content, totalElements, totalPages, number, size]
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Empleado'
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+
+    ErrorResponse:
+      type: object
+      required: [timestamp, status, error, message, path]
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string

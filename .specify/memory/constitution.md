@@ -1,12 +1,10 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 -> 1.1.0
+- Version change: 1.1.0 -> 2.0.0
 - Modified principles:
-	- II. Java 17 Compatibility Is Mandatory -> II. Versioned API Contract Is Mandatory
-	- III. Security Baseline with HTTP Basic Authentication -> III. Basic Auth + Role-Based Authorization Baseline
-	- V. API Documentation via Swagger/OpenAPI -> V. Pagination Is Mandatory for Employee Listings
+	- III. Basic Auth + Role-Based Authorization Baseline -> III. Empleado Authentication + Role-Based Authorization Baseline
 - Added sections:
-	- API Standards
+	- None
 - Removed sections:
 	- None
 - Templates requiring updates:
@@ -39,13 +37,27 @@ Endpoints outside this prefix are prohibited, except for
 Rationale: a single versioned namespace prevents route drift and allows
 controlled API evolution.
 
-### III. Basic Auth + Role-Based Authorization Baseline
-Authentication MUST use HTTP Basic Authentication. For test and local validation
-flows, the fixed admin credential MUST be `admin/admin123`.
+### III. Empleado Authentication + Role-Based Authorization Baseline
+Final authentication MUST NOT rely on in-memory users or hardcoded credentials.
+Authentication MUST be resolved against persisted `Empleado` records in
+PostgreSQL.
+
+Each authenticable employee MUST include:
+- unique `email`
+- `password` stored as a BCrypt hash
+- role value used for authorization decisions (`ADMIN` or `USER`)
+
+The MVP login mechanism MUST use HTTP Basic Authentication with
+`email:password`. A dedicated endpoint such as `/api/v1/auth/login` MAY be
+added only when explicitly justified by the feature plan; otherwise, Basic Auth
+is the default implementation path.
 
 Authorization MUST enforce role `ADMIN` for all write operations
-(`POST`, `PUT`, `DELETE`). Read operations MAY be broader only if explicitly
-documented by feature specification.
+(`POST`, `PUT`, `DELETE`).
+
+Read operations for employee resources MUST be available to authenticated
+`ADMIN` and `USER` roles. Any broader read access outside this rule MUST be
+explicitly justified in the approved feature specification.
 
 Swagger/OpenAPI UI MUST support `Authorize` with `basicAuth`.
 
@@ -55,6 +67,12 @@ early-stage backend APIs while preserving a migration path to stronger schemes.
 ### IV. PostgreSQL + Dockerized Runtime Parity
 Persistent data MUST be stored in PostgreSQL. Development and local validation
 MUST run through Docker (e.g., Docker Compose) with a PostgreSQL service.
+The default local runtime topology MUST use exactly two containers for this
+practice scope: backend + PostgreSQL.
+
+`/actuator/health` MUST remain `permitAll` to keep Docker healthchecks
+operational without credentials.
+
 Application configuration MUST support container-based execution without manual,
 machine-specific steps.
 
@@ -76,10 +94,14 @@ client-side navigation.
 	runtime images.
 - Container assets MUST be maintained (`Dockerfile` and/or `docker-compose.yml`
 	as applicable to the service scope).
+- Security configuration MUST source identities from persisted `Empleado`
+	records (email + BCrypt password + role), not from in-memory users.
 - Database access MUST use managed configuration (`application.yml` profiles,
 	environment variables, or equivalent secure injection).
-- API health and startup readiness SHOULD be verifiable in containerized local
+- API health and startup readiness MUST be verifiable in containerized local
 	execution before merge.
+- Feature delivery MUST be incremental and MUST NOT introduce architecture or
+	module rewrites outside the scoped change.
 
 ## API Standards
 
@@ -88,6 +110,8 @@ client-side navigation.
 	and `/actuator/**`.
 - OpenAPI definitions MUST declare `basicAuth` and include security
 	requirements for protected operations.
+- `/actuator/health` MUST stay public (`permitAll`) while business routes remain
+	protected.
 - Employee list operations MUST support `page`, `size`, `sort` and return
 	page metadata with content.
 
@@ -97,10 +121,12 @@ client-side navigation.
 	against all five principles.
 - Pull requests MUST include evidence for:
 	- API base path compliance (`/api/v1`)
-	- Security configuration (Basic Auth + ADMIN write restrictions)
+	- Security configuration (Empleado-backed Basic Auth with BCrypt validation)
+	- Authorization mapping (`ADMIN` write, `USER`/`ADMIN` read)
 	- Swagger `basicAuth` Authorize support
+	- Public healthcheck behavior (`/actuator/health` as `permitAll`)
 	- Pagination behavior for employee list operations
-	- PostgreSQL connectivity in Dockerized local runtime
+	- Two-container Docker runtime (`postgres` + `backend`) with PostgreSQL connectivity
 	- Swagger/OpenAPI availability and updated endpoint documentation
 - Changes that violate any principle are blocked until resolved or until this
 	constitution is amended through governance.
@@ -120,4 +146,4 @@ Amendment policy:
 	- PATCH: clarifications without normative impact
 - Compliance review is mandatory in planning and code review phases.
 
-**Version**: 1.1.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-05
+**Version**: 2.0.0 | **Ratified**: 2026-02-25 | **Last Amended**: 2026-03-12
