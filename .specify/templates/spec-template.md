@@ -95,11 +95,17 @@
 - **FR-009**: System MUST keep `/actuator/health` public (`permitAll`) for container healthchecks.
 - **FR-010**: System MUST expose and maintain API documentation via Swagger/OpenAPI with `basicAuth` Authorize support.
 - **FR-011**: Employee list endpoint MUST support `page`, `size`, `sort` and return paginated response metadata.
+- **FR-012**: If frontend is in scope, frontend MUST use Angular 22 LTS.
+- **FR-013**: Frontend MUST treat backend as source of truth and MUST NOT reimplement backend business logic.
+- **FR-014**: Frontend role handling MUST reflect backend permissions in navigation and visible actions (`ADMIN` write, `USER` read-only), while backend remains final enforcement authority.
+- **FR-015**: Frontend login MUST use the current backend authentication mechanism unless a strongly justified and approved change is documented.
+- **FR-016**: If frontend is in scope, Cypress end-to-end tests MUST cover critical login flow, employee CRUD main flow, and department CRUD main flow.
+- **FR-017**: Frontend Dockerization MUST NOT be included in minimum scope unless explicitly justified in plan and approved.
 
 *Example of marking unclear requirements:*
 
-- **FR-012**: System MUST authenticate users via [NEEDS CLARIFICATION: Basic Auth only for MVP, or Basic Auth + dedicated `/api/v1/auth/login` endpoint?]
-- **FR-013**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
+- **FR-018**: System MUST authenticate users via [NEEDS CLARIFICATION: Basic Auth only for MVP, or Basic Auth + dedicated `/api/v1/auth/login` endpoint?]
+- **FR-019**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
 ### Key Entities *(include if feature involves data)*
 

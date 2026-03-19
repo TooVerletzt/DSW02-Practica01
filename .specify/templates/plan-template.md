@@ -31,15 +31,21 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-- Stack gate: Uses Spring Boot 3 and Java 17.
+- Stack gate: Backend uses Spring Boot 3 and Java 17.
+- Frontend stack gate (if frontend is in scope): Uses Angular 22 LTS.
 - API versioning gate: Exposes business REST endpoints only under `/api/v1` (except `/swagger-ui/**`, `/v3/api-docs/**`, `/actuator/**`).
 - Security gate: Enforces HTTP Basic Authentication backed by persisted `Empleado` credentials (`email` + BCrypt `password`).
 - Identity source gate: Prohibits in-memory/hardcoded final credentials for feature delivery.
 - Authorization gate: Requires role `ADMIN` for write operations (`POST`, `PUT`, `DELETE`) and allows read operations to `ADMIN` and `USER`.
+- Security authority gate: Frontend permission checks are UX-only; real authorization remains in backend.
+- Source-of-truth gate: Frontend MUST NOT reimplement backend business rules.
+- Login gate: Frontend login uses existing backend auth mechanism unless a strongly justified and approved change is documented.
 - Data gate: Uses PostgreSQL as the persistent store.
 - Runtime gate: Supports Docker-based local execution with two containers (`backend` + `postgres`) and keeps `/actuator/health` public (`permitAll`) for healthchecks.
+- Frontend runtime gate: Frontend Docker is out of minimum scope unless explicitly justified.
 - Documentation gate: Includes Swagger/OpenAPI with `basicAuth` Authorize support.
 - Pagination gate: Employee list endpoints support `page`, `size`, `sort` and return paginated metadata.
+- E2E gate (if frontend is in scope): Cypress covers critical login + employee CRUD + department CRUD flows.
 
 ## Project Structure
 
@@ -88,8 +94,9 @@ frontend/
 ├── src/
 │   ├── components/
 │   ├── pages/
+│   ├── guards/
 │   └── services/
-└── tests/
+└── cypress/
 
 # [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
 api/
