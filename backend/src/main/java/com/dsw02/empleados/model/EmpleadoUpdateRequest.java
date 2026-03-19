@@ -33,6 +33,9 @@ public class EmpleadoUpdateRequest {
     @NotNull
     private EmpleadoRole role;
 
+    @Size(max = 16)
+    private String departamentoClave;
+
     public String getNombre() {
         return nombre;
     }
@@ -79,5 +82,13 @@ public class EmpleadoUpdateRequest {
 
     public void setRole(EmpleadoRole role) {
         this.role = role;
+    }
+
+    public String getDepartamentoClave() {
+        return departamentoClave;
+    }
+
+    public void setDepartamentoClave(String departamentoClave) {
+        this.departamentoClave = departamentoClave;
     }
 }

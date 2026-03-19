@@ -8,6 +8,7 @@ public class EmpleadoResponse {
     private String telefono;
     private String email;
     private EmpleadoRole role;
+    private String departamentoClave;
 
     public String getClave() {
         return clave;
@@ -55,5 +56,13 @@ public class EmpleadoResponse {
 
     public void setRole(EmpleadoRole role) {
         this.role = role;
+    }
+
+    public String getDepartamentoClave() {
+        return departamentoClave;
+    }
+
+    public void setDepartamentoClave(String departamentoClave) {
+        this.departamentoClave = departamentoClave;
     }
 }

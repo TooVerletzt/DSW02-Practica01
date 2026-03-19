@@ -15,6 +15,8 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, String> {
 
     Optional<Empleado> findByEmail(String email);
 
+    boolean existsByDepartamento_Clave(String clave);
+
     @Query(value = "SELECT COALESCE(MAX(CAST(SUBSTRING(clave FROM 5) AS BIGINT)), 0) FROM empleados", nativeQuery = true)
     long findMaxConsecutivo();
 }

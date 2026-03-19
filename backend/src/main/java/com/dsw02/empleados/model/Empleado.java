@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,6 +35,10 @@ public class Empleado {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
     private EmpleadoRole role;
+
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "departamento_clave", referencedColumnName = "clave")
+    private Departamento departamento;
 
     public String getClave() {
         return clave;
@@ -88,5 +94,13 @@ public class Empleado {
 
     public void setRole(EmpleadoRole role) {
         this.role = role;
+    }
+
+    public Departamento getDepartamento() {
+        return departamento;
+    }
+
+    public void setDepartamento(Departamento departamento) {
+        this.departamento = departamento;
     }
 }

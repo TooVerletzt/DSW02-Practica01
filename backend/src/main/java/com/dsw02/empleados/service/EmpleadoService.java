@@ -4,6 +4,7 @@ import com.dsw02.empleados.model.Empleado;
 import com.dsw02.empleados.model.EmpleadoCreateRequest;
 import com.dsw02.empleados.model.EmpleadoResponse;
 import com.dsw02.empleados.model.EmpleadoUpdateRequest;
+import com.dsw02.empleados.model.Departamento;
 import com.dsw02.empleados.repository.EmpleadoRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,13 +17,16 @@ public class EmpleadoService {
 
     private final EmpleadoRepository empleadoRepository;
     private final EmpleadoValidationService validationService;
+    private final DepartamentoService departamentoService;
     private final PasswordEncoder passwordEncoder;
 
     public EmpleadoService(EmpleadoRepository empleadoRepository,
                            EmpleadoValidationService validationService,
+                           DepartamentoService departamentoService,
                            PasswordEncoder passwordEncoder) {
         this.empleadoRepository = empleadoRepository;
         this.validationService = validationService;
+        this.departamentoService = departamentoService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -38,6 +42,7 @@ public class EmpleadoService {
         empleado.setEmail(normalizeAndValidateUniqueEmail(request.getEmail(), null));
         empleado.setPasswordHash(passwordEncoder.encode(validationService.normalizeText(request.getPassword(), "password")));
         empleado.setRole(request.getRole());
+        empleado.setDepartamento(resolveDepartamento(request.getDepartamentoClave()));
 
         Empleado saved = empleadoRepository.save(empleado);
         return mapToResponse(saved);
@@ -70,6 +75,7 @@ public class EmpleadoService {
         empleado.setEmail(normalizeAndValidateUniqueEmail(request.getEmail(), empleado.getClave()));
         empleado.setPasswordHash(passwordEncoder.encode(validationService.normalizeText(request.getPassword(), "password")));
         empleado.setRole(request.getRole());
+        empleado.setDepartamento(resolveDepartamento(request.getDepartamentoClave()));
 
         Empleado saved = empleadoRepository.save(empleado);
         return mapToResponse(saved);
@@ -96,6 +102,7 @@ public class EmpleadoService {
         response.setTelefono(empleado.getTelefono());
         response.setEmail(empleado.getEmail());
         response.setRole(empleado.getRole());
+        response.setDepartamentoClave(empleado.getDepartamento() != null ? empleado.getDepartamento().getClave() : null);
         return response;
     }
 
@@ -107,5 +114,9 @@ public class EmpleadoService {
             }
         });
         return normalizedEmail;
+    }
+
+    private Departamento resolveDepartamento(String departamentoClave) {
+        return departamentoService.resolveOptional(departamentoClave);
     }
 }
