@@ -1,0 +1,27 @@
+<section class="login-card" data-cy="login-page">
+  <h2>Iniciar sesion</h2>
+
+  <app-api-feedback />
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>
+      Email
+      <input data-cy="login-email" type="email" formControlName="email" />
+    </label>
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+      <small>Ingresa un email valido.</small>
+    }
+
+    <label>
+      Password
+      <input data-cy="login-password" type="password" formControlName="password" />
+    </label>
+    @if (form.controls.password.touched && form.controls.password.invalid) {
+      <small>El password es obligatorio.</small>
+    }
+
+    <button data-cy="login-submit" type="submit" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Validando...' : 'Entrar' }}
+    </button>
+  </form>
+</section>

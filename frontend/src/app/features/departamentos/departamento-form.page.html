@@ -1,0 +1,11 @@
+<section class="form-wrap" data-cy="departamento-form-page">
+  <h2>{{ isEditMode ? 'Editar departamento' : 'Nuevo departamento' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>Nombre <input formControlName="nombre" data-cy="departamento-nombre" /></label>
+
+    <button data-cy="departamento-submit" type="submit" [disabled]="saving">
+      {{ saving ? 'Guardando...' : 'Guardar' }}
+    </button>
+  </form>
+</section>

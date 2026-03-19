@@ -1,0 +1,46 @@
+<section>
+  <div class="header">
+    <h2>Departamentos</h2>
+    @if (isAdmin) {
+      <a data-cy="departamentos-new" routerLink="/departamentos/nuevo">Nuevo</a>
+    }
+  </div>
+
+  @if (loading) {
+    <p>Cargando...</p>
+  } @else if (departamentos.length === 0) {
+    <p>Sin departamentos registrados.</p>
+  } @else {
+    <table data-cy="departamentos-table">
+      <thead>
+        <tr>
+          <th>Clave</th>
+          <th>Nombre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (departamento of departamentos; track departamento.clave) {
+          <tr>
+            <td>{{ departamento.clave }}</td>
+            <td>{{ departamento.nombre }}</td>
+            <td>
+              @if (isAdmin) {
+                <button data-cy="departamento-edit" type="button" (click)="edit(departamento.clave)">Editar</button>
+                <button data-cy="departamento-delete" type="button" (click)="remove(departamento.clave)">Eliminar</button>
+              } @else {
+                <span data-cy="departamento-readonly">Solo lectura</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <div class="pager" data-cy="departamentos-pager">
+    <button type="button" (click)="prevPage()" [disabled]="page === 0">Anterior</button>
+    <span>Pagina {{ page + 1 }} de {{ totalPages || 1 }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="page + 1 >= totalPages">Siguiente</button>
+  </div>
+</section>

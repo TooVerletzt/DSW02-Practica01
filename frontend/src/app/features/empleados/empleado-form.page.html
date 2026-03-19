@@ -1,0 +1,31 @@
+<section class="form-wrap" data-cy="empleado-form-page">
+  <h2>{{ isEditMode ? 'Editar empleado' : 'Nuevo empleado' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <label>Nombre <input formControlName="nombre" data-cy="empleado-nombre" /></label>
+    <label>Direccion <input formControlName="direccion" data-cy="empleado-direccion" /></label>
+    <label>Telefono <input formControlName="telefono" data-cy="empleado-telefono" /></label>
+    <label>Email <input type="email" formControlName="email" data-cy="empleado-email" /></label>
+    <label>Password <input type="password" formControlName="password" data-cy="empleado-password" /></label>
+    <label>
+      Rol
+      <select formControlName="role" data-cy="empleado-role">
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+      </select>
+    </label>
+    <label>
+      Departamento
+      <select formControlName="departamentoClave" data-cy="empleado-departamento">
+        <option value="">Sin departamento</option>
+        @for (dep of departamentos; track dep.clave) {
+          <option [value]="dep.clave">{{ dep.clave }} - {{ dep.nombre }}</option>
+        }
+      </select>
+    </label>
+
+    <button data-cy="empleado-submit" type="submit" [disabled]="saving">
+      {{ saving ? 'Guardando...' : 'Guardar' }}
+    </button>
+  </form>
+</section>

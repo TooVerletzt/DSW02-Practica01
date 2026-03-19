@@ -1,0 +1,6 @@
+@if (message$ | async; as message) {
+  <section class="feedback" [ngClass]="message.type" data-cy="api-feedback">
+    <span>{{ message.text }}</span>
+    <button type="button" (click)="clear()" aria-label="Cerrar mensaje">x</button>
+  </section>
+}

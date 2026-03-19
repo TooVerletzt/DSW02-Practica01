@@ -1,0 +1,52 @@
+<section>
+  <div class="header">
+    <h2>Empleados</h2>
+    @if (isAdmin) {
+      <a data-cy="empleados-new" routerLink="/empleados/nuevo">Nuevo</a>
+    }
+  </div>
+
+  @if (loading) {
+    <p>Cargando...</p>
+  } @else if (empleados.length === 0) {
+    <p>Sin empleados registrados.</p>
+  } @else {
+    <table data-cy="empleados-table">
+      <thead>
+        <tr>
+          <th>Clave</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Departamento</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (empleado of empleados; track empleado.clave) {
+          <tr>
+            <td>{{ empleado.clave }}</td>
+            <td>{{ empleado.nombre }}</td>
+            <td>{{ empleado.email }}</td>
+            <td>{{ empleado.role }}</td>
+            <td>{{ empleado.departamentoClave || '-' }}</td>
+            <td>
+              @if (isAdmin) {
+                <button data-cy="empleado-edit" type="button" (click)="edit(empleado.clave)">Editar</button>
+                <button data-cy="empleado-delete" type="button" (click)="remove(empleado.clave)">Eliminar</button>
+              } @else {
+                <span data-cy="empleado-readonly">Solo lectura</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <div class="pager" data-cy="empleados-pager">
+    <button type="button" (click)="prevPage()" [disabled]="page === 0">Anterior</button>
+    <span>Pagina {{ page + 1 }} de {{ totalPages || 1 }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="page + 1 >= totalPages">Siguiente</button>
+  </div>
+</section>

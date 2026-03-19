@@ -1,0 +1,41 @@
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 64px);
+
+  aside {
+    background: #f1f5f9;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    a {
+      color: #0f172a;
+      text-decoration: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      border: 1px solid transparent;
+
+      &.active {
+        background: #dbeafe;
+        border-color: #93c5fd;
+      }
+    }
+  }
+
+  main {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+
+    aside {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+  }
+}

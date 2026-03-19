@@ -1,0 +1,17 @@
+<app-topbar />
+
+<div class="shell">
+  <aside>
+    <a routerLink="/empleados" routerLinkActive="active" data-cy="nav-empleados">Empleados</a>
+    <a routerLink="/departamentos" routerLinkActive="active" data-cy="nav-departamentos">Departamentos</a>
+    @if (isAdmin) {
+      <a routerLink="/empleados/nuevo" routerLinkActive="active" data-cy="nav-empleados-nuevo">Nuevo empleado</a>
+      <a routerLink="/departamentos/nuevo" routerLinkActive="active" data-cy="nav-departamentos-nuevo">Nuevo departamento</a>
+    }
+  </aside>
+
+  <main>
+    <app-api-feedback />
+    <router-outlet />
+  </main>
+</div>

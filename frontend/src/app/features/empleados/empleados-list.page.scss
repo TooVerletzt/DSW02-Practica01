@@ -1,0 +1,38 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th,
+td {
+  border: 1px solid #e2e8f0;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+a {
+  text-decoration: none;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+button {
+  margin-right: 6px;
+}
+
+.pager {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

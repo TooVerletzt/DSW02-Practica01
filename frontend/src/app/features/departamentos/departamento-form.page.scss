@@ -1,0 +1,26 @@
+.form-wrap {
+  max-width: 560px;
+}
+
+form {
+  display: grid;
+  gap: 10px;
+}
+
+input {
+  width: 100%;
+  margin-top: 4px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+button {
+  width: max-content;
+  border: none;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
