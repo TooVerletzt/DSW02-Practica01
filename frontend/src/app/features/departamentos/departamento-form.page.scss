@@ -1,26 +1,40 @@
 .form-wrap {
   max-width: 560px;
+  background: linear-gradient(180deg, rgba(15, 31, 51, 0.96), rgba(10, 20, 40, 0.96));
+  border: 1px solid rgba(42, 67, 102, 0.85);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.3);
 }
 
 form {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 input {
   width: 100%;
   margin-top: 4px;
   box-sizing: border-box;
-  border: 1px solid #cbd5e1;
+  border: 1px solid rgba(42, 67, 102, 0.95);
+  background: rgba(7, 17, 34, 0.86);
+  color: var(--lol-gold-soft);
   border-radius: 8px;
-  padding: 8px;
+  padding: 9px;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(200, 170, 110, 0.85);
+    box-shadow: 0 0 0 3px rgba(200, 170, 110, 0.18);
+  }
 }
 
 button {
   width: max-content;
-  border: none;
-  background: #2563eb;
-  color: #fff;
-  border-radius: 6px;
-  padding: 8px 12px;
+  border: 1px solid rgba(200, 170, 110, 0.45);
+  background: linear-gradient(180deg, #1a6b85, #0c364a);
+  color: var(--lol-gold-soft);
+  border-radius: 8px;
+  padding: 8px 14px;
+  letter-spacing: 0.04em;
 }

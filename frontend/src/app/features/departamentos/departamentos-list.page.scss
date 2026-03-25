@@ -1,14 +1,29 @@
 table {
   width: 100%;
   border-collapse: collapse;
-  background: #fff;
+  background: linear-gradient(180deg, rgba(15, 31, 51, 0.95), rgba(10, 20, 40, 0.95));
+  border: 1px solid rgba(42, 67, 102, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 th,
 td {
-  border: 1px solid #e2e8f0;
-  padding: 8px;
+  border: 1px solid rgba(42, 67, 102, 0.55);
+  padding: 10px;
   font-size: 14px;
+  color: var(--lol-gold-soft);
+}
+
+th {
+  background: rgba(7, 17, 34, 0.94);
+  color: var(--lol-gold);
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(19, 40, 68, 0.5);
 }
 
 .header {
@@ -16,23 +31,41 @@ td {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
+
+  h2 {
+    color: var(--lol-gold);
+    margin: 0;
+  }
 }
 
 a {
   text-decoration: none;
-  background: #2563eb;
-  color: #fff;
-  border-radius: 6px;
-  padding: 8px 10px;
+  background: linear-gradient(180deg, #1a6b85, #0c364a);
+  color: var(--lol-gold-soft);
+  border: 1px solid rgba(200, 170, 110, 0.45);
+  border-radius: 8px;
+  padding: 8px 11px;
 }
 
 button {
   margin-right: 6px;
+  border: 1px solid rgba(200, 170, 110, 0.4);
+  border-radius: 7px;
+  background: rgba(12, 54, 74, 0.65);
+  color: var(--lol-gold-soft);
+  padding: 6px 10px;
+  cursor: pointer;
 }
 
 .pager {
-  margin-top: 12px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--lol-muted);
+
+  button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
 }

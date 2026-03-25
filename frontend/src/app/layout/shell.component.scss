@@ -1,31 +1,41 @@
 .shell {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 260px 1fr;
   min-height: calc(100vh - 64px);
 
   aside {
-    background: #f1f5f9;
-    padding: 16px;
+    background: linear-gradient(180deg, rgba(5, 11, 22, 0.82), rgba(10, 20, 40, 0.88));
+    border-right: 1px solid rgba(200, 170, 110, 0.28);
+    padding: 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 
     a {
-      color: #0f172a;
+      color: var(--lol-gold-soft);
       text-decoration: none;
-      border-radius: 8px;
-      padding: 8px 10px;
-      border: 1px solid transparent;
+      border-radius: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(42, 67, 102, 0.7);
+      background: rgba(15, 31, 51, 0.68);
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+
+      &:hover {
+        border-color: rgba(200, 170, 110, 0.65);
+        background: rgba(19, 40, 68, 0.92);
+        transform: translateX(2px);
+      }
 
       &.active {
-        background: #dbeafe;
-        border-color: #93c5fd;
+        background: linear-gradient(90deg, rgba(200, 170, 110, 0.22), rgba(5, 150, 170, 0.2));
+        border-color: rgba(200, 170, 110, 0.85);
+        color: var(--lol-gold);
       }
     }
   }
 
   main {
-    padding: 16px;
+    padding: 20px;
   }
 }
 

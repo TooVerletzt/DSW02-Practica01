@@ -1,9 +1,44 @@
 # Feature Specification: Frontend Angular Empleados y Departamentos
 
-**Feature Branch**: `001-angular-frontend-crud`  
+**Feature Branch**: `005-angular-frontend-login-empleados-departamentos`  
 **Created**: 2026-03-19  
 **Status**: Draft  
 **Input**: User description: "Construir frontend Angular 22 LTS para login, navegación protegida y CRUD de empleados/departamentos consumiendo backend Spring Boot existente con roles ADMIN/USER"
+
+## Scope Closure (Minimum Version)
+
+This section formalizes the approved minimum scope before implementation planning.
+
+### Confirmed Decisions
+
+1. Frontend stack is Angular 22 LTS.
+2. Frontend location is a new `frontend/` folder.
+3. Login in this first version uses the current backend mechanism (HTTP Basic Auth).
+4. Existing backend remains the real authority for authentication, authorization, and business rules.
+5. `ADMIN` can create, update, and delete empleados and departamentos.
+6. `USER` can only consult empleados and departamentos.
+7. Frontend reflects role permissions in navigation and visible actions only; it does not replace backend security.
+8. Minimum scope includes:
+	- login
+	- logout
+	- protected routing
+	- guards
+	- empleado CRUD views
+	- departamento CRUD views
+	- basic form validations
+	- minimum Cypress E2E for critical flows
+9. Frontend Dockerization is out of minimum scope.
+10. Backend can receive only strict minimal adjustments if required for integration (for example, CORS).
+
+### Explicitly Out of Minimum Scope
+
+- JWT-based authentication.
+- Refresh tokens.
+- Frontend Dockerization.
+- Exhaustive E2E test matrix.
+- Backend redesign.
+- Major security architecture changes.
+- SSR/PWA and advanced frontend optimization tracks.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -101,6 +136,155 @@ Como responsable de calidad, quiero pruebas E2E que validen los flujos mas impor
 - **FR-015**: Minimum scope MUST exclude Dockerization for frontend unless explicitly justified and approved later.
 - **FR-016**: Cypress E2E coverage MUST include critical login flow and main CRUD flows for empleados and departamentos.
 - **FR-017**: E2E tests MUST include role-based behavior validation for both `ADMIN` and `USER`.
+- **FR-018**: Frontend MUST define environment-based backend base URL configuration for local and production-like execution.
+- **FR-019**: Frontend MUST include a minimal and explicit CORS compatibility guideline for local development against backend.
+
+## Technical Specification
+
+### 1) Recommended Folder Structure for `frontend/`
+
+```text
+frontend/
+├── src/
+│   ├── app/
+│   │   ├── core/
+│   │   │   ├── auth/
+│   │   │   │   ├── auth.service.ts
+│   │   │   │   ├── session.service.ts
+│   │   │   │   └── auth.interceptor.ts
+│   │   │   ├── guards/
+│   │   │   │   ├── auth.guard.ts
+│   │   │   │   └── role.guard.ts
+│   │   │   └── http/
+│   │   │       └── api-error.interceptor.ts
+│   │   ├── features/
+│   │   │   ├── login/
+│   │   │   │   └── login.page.ts
+│   │   │   ├── empleados/
+│   │   │   │   ├── empleados-list.page.ts
+│   │   │   │   ├── empleado-form.page.ts
+│   │   │   │   └── empleados.service.ts
+│   │   │   └── departamentos/
+│   │   │       ├── departamentos-list.page.ts
+│   │   │       ├── departamento-form.page.ts
+│   │   │       └── departamentos.service.ts
+│   │   ├── layout/
+│   │   │   ├── shell.component.ts
+│   │   │   └── topbar.component.ts
+│   │   ├── shared/
+│   │   │   ├── components/
+│   │   │   └── models/
+│   │   ├── app.routes.ts
+│   │   └── app.config.ts
+│   ├── environments/
+│   │   ├── environment.ts
+│   │   └── environment.prod.ts
+│   └── main.ts
+└── cypress/
+	├── e2e/
+	└── support/
+```
+
+### 2) Angular 22 LTS Approach
+
+- Adopt standalone components as the default composition model.
+- Use `provideRouter` with feature routes and route guards.
+- Keep feature boundaries by domain (`login`, `empleados`, `departamentos`).
+- Use `HttpClient` with interceptors for authentication header and common error mapping.
+
+### 3) Required HTTP Services
+
+- `AuthService`: login probe against backend, session bootstrap, logout.
+- `SessionService`: in-memory/sessionStorage state for authenticated user and inferred role context.
+- `EmpleadosService`: list, detail (optional), create, update, delete against backend endpoints.
+- `DepartamentosService`: list, detail (optional), create, update, delete against backend endpoints.
+
+All services MUST call existing backend endpoints and MUST NOT duplicate backend validations.
+
+### 4) Required Guards
+
+- `AuthGuard`: blocks protected routes when there is no active session.
+- `RoleGuard`: protects write routes/pages so only `ADMIN` can access create/edit/delete screens.
+
+Route guards are UX controls. Backend remains final authorization authority.
+
+### 5) Simple Basic Auth Strategy (Academic Scope)
+
+- Collect `email` and `password` in login page.
+- Build Basic Auth header client-side for requests: `Authorization: Basic <base64(email:password)>`.
+- Keep credentials only in session scope (for example, `sessionStorage`) and clear them on logout.
+- Never treat frontend session state as proof of authorization; handle backend `401/403` as source of truth.
+
+### 6) Minimum Pages and Components
+
+- `LoginPage`
+- `ShellComponent` (protected layout and navigation)
+- `EmpleadosListPage`
+- `EmpleadoFormPage` (create/edit)
+- `DepartamentosListPage`
+- `DepartamentoFormPage` (create/edit)
+- Shared confirmation and feedback components for delete/error/success flows
+
+### 7) Environments and Backend Base URL
+
+- `environment.ts`: local URL pointing to current backend (for example, `http://localhost:8080`).
+- `environment.prod.ts`: production-like URL placeholder per deployment context.
+- Backend base URL MUST be centralized in environment config and consumed by services.
+
+### 8) Expected CORS Handling (If Needed)
+
+- If frontend and backend run on different origins in development, backend may need to allow frontend origin (for example `http://localhost:4200`) and `Authorization` header.
+- CORS adjustment is considered minimal integration setup, not a business-logic change.
+- If same-origin deployment is used later, no special CORS handling is required.
+
+### 9) Role-Reflective UI Without Replacing Backend Security
+
+- For `ADMIN`: show navigation and actions for create/edit/delete.
+- For `USER`: hide or disable write actions, keep read-only flows.
+- On forced client-side attempts, frontend must still rely on backend response (`403`) and show feedback.
+- UI permission reflection is convenience and guidance; backend authorization remains mandatory.
+
+### 10) Cypress E2E Test Strategy (Minimum University Scope)
+
+#### 10.1 Critical Flows to Cover
+
+- Login exitoso (usuario valido).
+- Login fallido (credenciales invalidas).
+- Navegacion protegida hacia empleados y departamentos tras login.
+- Validacion visual de permisos por rol (`ADMIN` vs `USER`).
+- Creacion basica de un departamento por `ADMIN`.
+- Creacion basica de un empleado por `ADMIN`.
+
+#### 10.2 ADMIN Scenarios
+
+- Debe iniciar sesion correctamente y acceder al shell principal.
+- Debe navegar a empleados y departamentos sin bloqueos.
+- Debe visualizar acciones de escritura (crear/editar/eliminar) en ambas vistas.
+- Debe poder crear un departamento con datos minimos validos y ver confirmacion.
+- Debe poder crear un empleado con datos minimos validos y ver confirmacion.
+
+#### 10.3 USER Scenarios
+
+- Debe iniciar sesion correctamente y acceder al shell principal.
+- Debe navegar a empleados y departamentos en modo consulta.
+- No debe visualizar (o debe ver deshabilitadas) acciones de crear/editar/eliminar.
+- Si intenta acceso directo por URL a rutas de escritura, debe ser redirigido o bloqueado por guard.
+- Si fuerza accion de escritura desde cliente, debe observar respuesta de backend denegada y mensaje de error.
+
+#### 10.4 Verifiable Acceptance for E2E Suite
+
+- La suite E2E minima contiene al menos 7 specs: login (ok/fail), nav-protected, empleados-role-visibility, departamentos-role-visibility, user-write-forbidden, empleados-admin-crud-smoke, departamentos-admin-crud-smoke.
+- Todas las pruebas E2E se ejecutan en entorno local con backend activo y reportan resultado pass/fail reproducible.
+- Las pruebas de rol validan comportamiento visual de UI y tambien incluyen rechazo backend ante intento de escritura forzada por `USER`.
+
+#### 10.5 Out of Minimum Scope
+
+- Pruebas de performance/carga y stress.
+- Matriz completa de validaciones de campos en todos los formularios.
+- Cobertura exhaustiva de todos los mensajes de error de negocio del backend.
+- Pruebas cross-browser avanzadas y dispositivos moviles en gran escala.
+- Pruebas de recuperacion ante caidas complejas de infraestructura.
+- Automatizacion CI/CD obligatoria para Cypress en esta fase inicial.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -125,4 +309,4 @@ Como responsable de calidad, quiero pruebas E2E que validen los flujos mas impor
 - **SC-003**: En pruebas funcionales, `ADMIN` completa exitosamente operaciones principales de alta, edicion y baja para empleados y departamentos.
 - **SC-004**: En pruebas funcionales, `USER` no puede ejecutar operaciones de escritura y solo accede a vistas de consulta.
 - **SC-005**: El 100% de errores criticos de autenticacion/autorizacion y conflictos de negocio recibidos desde backend se muestran al usuario con feedback claro.
-- **SC-006**: La suite Cypress cubre y ejecuta satisfactoriamente al menos login, CRUD principal de empleados y CRUD principal de departamentos.
+- **SC-006**: La suite Cypress cubre y ejecuta satisfactoriamente login (ok/fail), navegacion protegida, visibilidad/restriccion por rol en empleados y departamentos, rechazo backend de escritura forzada por `USER`, y CRUD smoke de empleados y departamentos para `ADMIN`.
