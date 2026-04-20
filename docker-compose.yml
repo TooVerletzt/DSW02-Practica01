@@ -7,8 +7,8 @@ services:
       POSTGRES_DB: empleadosdb
       POSTGRES_USER: empleados_user
       POSTGRES_PASSWORD: empleados_pass
-    ports:
-      - "5433:5432"
+    expose:
+      - "5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d empleadosdb -U empleados_user"]
       interval: 10s
@@ -20,7 +20,6 @@ services:
 
   empleados-backend:
     build: ./backend
-    container_name: empleados-backend
     restart: unless-stopped
     depends_on:
       empleados-postgres:
@@ -29,8 +28,8 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://empleados-postgres:5432/empleadosdb
       SPRING_DATASOURCE_USERNAME: empleados_user
       SPRING_DATASOURCE_PASSWORD: empleados_pass
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
       interval: 15s
@@ -38,5 +37,43 @@ services:
       retries: 8
       start_period: 30s
 
+  empleados-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      empleados-backend:
+        condition: service_healthy
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+
+  proxy:
+    image: nginx:1.27-alpine
+    container_name: empleados-proxy
+    restart: unless-stopped
+    depends_on:
+      empleados-backend:
+        condition: service_healthy
+      empleados-frontend:
+        condition: service_healthy
+    ports:
+      - "4280:80"
+    volumes:
+      - ./proxy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+
 volumes:
   postgres_data:
+
