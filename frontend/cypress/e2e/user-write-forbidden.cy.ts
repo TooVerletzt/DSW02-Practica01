@@ -3,7 +3,7 @@ describe('user forced write rejection', () => {
     cy.login('user@demo.com', 'user123');
     cy.request({
       method: 'POST',
-      url: 'http://localhost:8080/api/v1/departamentos',
+      url: '/api/v1/departamentos',
       body: { nombre: `DEP-CY-${Date.now()}` },
       auth: { username: 'user@demo.com', password: 'user123' },
       failOnStatusCode: false
