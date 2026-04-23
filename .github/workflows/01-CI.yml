@@ -52,3 +52,14 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Run isolated Cypress UI spec
+        uses: cypress-io/github-action@v6
+        with:
+          install: false
+          working-directory: frontend
+          start: npm run start -- --host 127.0.0.1 --port 4200
+          wait-on: http://127.0.0.1:4200/login
+          wait-on-timeout: 120
+          spec: cypress/e2e/login-ui-ci.cy.ts
+          config: baseUrl=http://127.0.0.1:4200,video=false,screenshotOnRunFailure=true
