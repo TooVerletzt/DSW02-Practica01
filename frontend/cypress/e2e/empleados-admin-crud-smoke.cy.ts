@@ -29,7 +29,7 @@ describe('empleados admin crud smoke', () => {
     cy.then(() => {
       cy.request({
         method: 'GET',
-        url: `http://localhost:8080/api/v1/empleados/${createdClave}`,
+        url: `/api/v1/empleados/${createdClave}`,
         auth: { username: 'admin@demo.com', password: 'admin123' }
       }).then((response) => {
         expect(response.status).to.eq(200);
@@ -49,7 +49,7 @@ describe('empleados admin crud smoke', () => {
     cy.then(() => {
       cy.request({
         method: 'GET',
-        url: `http://localhost:8080/api/v1/empleados/${createdClave}`,
+        url: `/api/v1/empleados/${createdClave}`,
         auth: { username: 'admin@demo.com', password: 'admin123' }
       }).then((response) => {
         expect(response.status).to.eq(200);
@@ -60,7 +60,7 @@ describe('empleados admin crud smoke', () => {
 
     cy.then(() => {
       cy.window().then((win) => {
-        void win.fetch(`http://localhost:8080/api/v1/empleados/${createdClave}`, {
+        void win.fetch(`/api/v1/empleados/${createdClave}`, {
           method: 'DELETE',
           headers: {
             Authorization: authHeader
@@ -73,7 +73,7 @@ describe('empleados admin crud smoke', () => {
     cy.then(() => {
       cy.request({
         method: 'GET',
-        url: `http://localhost:8080/api/v1/empleados/${createdClave}`,
+        url: `/api/v1/empleados/${createdClave}`,
         auth: { username: 'admin@demo.com', password: 'admin123' },
         failOnStatusCode: false
       }).then((response) => {
