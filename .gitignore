@@ -29,3 +29,7 @@ node_modules/
 frontend/dist/
 frontend/.angular/
 coverage/
+
+# Cypress artifacts
+frontend/cypress/videos/
+frontend/cypress/screenshots/
